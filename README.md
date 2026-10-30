@@ -4,7 +4,7 @@
 
 A web app that maps tick sightings across the UK, helps people understand tick risk and lets them report their own sightings. This uses the Elanco Tick Sightings API.
 
-🎥 **Video walkthrough:** _[add your unlisted YouTube link here]_
+🎥 **Video walkthrough:** https://drive.google.com/file/d/1m9ij3i27BLD4NkbWehBNOg6jvamJDp8V/view?usp=sharing
 
 🌐 **Live demo:** https://mr4maan.github.io/uk-tick-tracker/
 
