@@ -1,0 +1,125 @@
+# UK Tick Tracker
+
+**By Muhammad Amaan** — Elanco Placement Programme 2026, Technical Task (Frontend)
+
+A web app that maps tick sightings across the UK, helps people understand tick risk and lets them report their own sightings. This uses the Elanco Tick Sightings API.
+
+🎥 **Video walkthrough:** _[add your unlisted YouTube link here]_
+
+---
+
+## How to run it
+
+No installation or build step is needed. It's plain HTML, CSS and JavaScript.
+
+**Option 1: VS Code + Live Server (recommended)**
+1. Clone or download this repository.
+2. Open the folder in VS Code.
+3. Install the **Live Server** extension (by Ritwick Dey).
+4. Right-click `index.html` → **Open with Live Server**.
+
+**Option 2: Just open the file**
+- Double-click `index.html` to open it in a modern browser (Chrome, Edge, Firefox).
+
+An internet connection is needed to load the map tiles, the libraries and the API data.
+
+---
+
+## Features
+
+The brief asks for at least 2 requirements from each area. This is what's implemented:
+
+| Area | Requirement | Done |
+|---|---|---|
+| **Interactive map** | Dynamic map of the UK | ✅ |
+| | Markers with visual indicators (size = number of sightings, colour = recent activity) | ✅ |
+| | Filter controls (location, species, date range) | ✅ |
+| **Sighting information** | Sidebar panel with details when a marker is clicked | ✅ |
+| | Timeline showing sightings per year for the selected area | ✅ |
+| | Quick actions: Report a sighting, Get directions, Share | ✅ |
+| **Education** | Species identification guide | ✅ |
+| | Prevention tips (people and pets) | ✅ |
+| | Seasonal activity chart with location and year dropdowns | ✅ |
+| **Report a sighting** | Form (date, time, location, species, where found, notes) | ✅ |
+| | Validation with error, warning and success messages | ✅ |
+| | Image upload with preview | ✅ |
+| **Extra** | Accessibility features (see below) | ✅ |
+
+---
+
+## Technical choices
+
+| Choice | Why |
+|---|---|
+| **Plain HTML, CSS and JavaScript** | No build tools, so it's easy to run and review. The project is small enough that a framework like React would add setup without much benefit. |
+| **Leaflet + OpenStreetMap** | Free, open source and lightweight. No API key needed. |
+| **Chart.js** | Simple, well documented charts that look good with little code. |
+| **localStorage** | Acts as this MVP's own small database for user reports, with no server needed. |
+
+### Project structure
+
+```
+index.html     Page layout: map, details panel, education section, report form
+style.css      Styling and responsive layout (works on phones)
+data.js        Loads, caches and cleans data from the API
+app.js         Map, markers, filters and details panel
+education.js   Species guide and seasonal activity chart
+report.js      Report form, validation, image upload and saved reports
+```
+
+---
+
+## How the data is handled
+
+The API returns sightings like this:
+
+```json
+{ "id": "...", "date": "2022-08-01T06:40:31", "location": "Manchester",
+  "species": "Marsh tick", "latinName": "Ixodes apronophorus" }
+```
+
+**1. Fetching.** All sightings are fetched in one request (around 1,000 records) and then filtered in the browser. This is quicker for the size of dataset than calling the API each time a filter changes.
+
+**2. Rate limits and failures.**
+- The data is **cached in the browser for 1 hour** to reduce API calls and avoid the rate limit.
+- Failed requests are **retried up to 3 times**, waiting a little longer each time.
+- If the API is down, the app **falls back to the last saved copy** and tells the user.
+- If there is no saved copy either, a clear error message is shown. The user's own reports still appear.
+
+**3. Cleaning.** Each record is checked before use:
+- **Missing fields or invalid dates** are skipped.
+- **Duplicates** are skipped: the same `id`, or the same date + location + species.
+- **Location names** are matched regardless of capital letters or extra spaces.
+- **Unknown locations** are skipped and logged.
+
+The app shows how many records were skipped and why.
+
+**4. Coordinates.** The API only provides a city name, so the app keeps its own lookup table of UK city coordinates.
+
+**5. Grouping.** Sightings are grouped into one marker per city, because every sighting in a city shares the same coordinates.
+
+**What I noticed in the data:** The sightings range from 2012 through 2024 and are fairly evenly distributed across months. Real tick activity usually peaks in spring and summer, which means this is synthetic test data. “Recent activity” is measured against the most recent sighting in the data, not the current date, as the data only goes up to 2024.
+
+---
+
+## Accessibility
+
+- A "Skip to main content" link for keyboard users.
+- All form fields have labels. Errors are linked to their fields (`aria-describedby`, `aria-invalid`), and focus moves to the first error.
+- A **Location dropdown** opens the same details as clicking a map marker, so the map can be used without a mouse.
+- Status and form messages are announced to screen readers (`aria-live`, `role="alert"`).
+- Charts have text descriptions, and the seasonal chart has a written summary underneath.
+- The Escape key closes the details panel.
+- Visible focus outlines and a responsive layout for small screens.
+
+---
+
+## What I'd improve with more time
+
+- **A real backend and database** (for example Node.js + PostgreSQL) so reports are shared between all users, not just saved in one browser. Uploaded photos would go to cloud storage.
+- **Exact locations for reports** using the browser's location or a postcode search, instead of choosing the nearest city.
+- **Moderation** of user reports and photos before they appear publicly.
+- **Automated tests** for the data cleaning and form validation.
+- **A heatmap layer** and clustering, for when there are many more locations.
+- **Server-side filtering and pagination**, if the dataset grew much larger.
+- **Dark mode** and a full accessibility audit with a screen reader.

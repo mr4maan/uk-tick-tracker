@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK Tick Tracker</title>
+
+  <!-- Leaflet: free, open-source map library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <h1>UK Tick Tracker</h1>
+    <p class="tagline">See where ticks have been spotted across the UK</p>
+    <nav class="site-nav" aria-label="Main">
+      <a href="#mapSection">Map</a>
+      <a href="#learn">Learn about ticks</a>
+      <a href="#report">Report a sighting</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <h2 id="mapSection" class="section-title">Sightings map</h2>
+    <!-- Filters for the map -->
+    <section class="filters" aria-label="Map filters">
+      <div class="filter">
+        <label for="cityFilter">Location</label>
+        <select id="cityFilter">
+          <option value="all">All locations</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label for="speciesFilter">Species</label>
+        <select id="speciesFilter">
+          <option value="all">All species</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label for="dateFrom">From</label>
+        <input type="date" id="dateFrom">
+      </div>
+      <div class="filter">
+        <label for="dateTo">To</label>
+        <input type="date" id="dateTo">
+      </div>
+      <button id="resetFilters" class="btn btn-secondary" type="button">Reset</button>
+      <p id="resultCount" class="result-count" aria-live="polite"></p>
+    </section>
+
+    <!-- Status messages (loading, errors) -->
+    <div id="status" class="status" role="status"></div>
+
+    <!-- The map, with a details panel that opens beside it -->
+    <div class="map-layout">
+      <div id="map" aria-label="Map of UK tick sightings"></div>
+
+      <aside id="detailPanel" class="panel" aria-labelledby="panelTitle" hidden>
+        <div class="panel-header">
+          <h2 id="panelTitle" tabindex="-1"></h2>
+          <button id="closePanel" class="icon-btn" type="button" aria-label="Close details">&times;</button>
+        </div>
+        <p id="panelSummary" class="panel-summary"></p>
+
+        <!-- Quick action buttons -->
+        <div class="quick-actions">
+          <a id="reportHere" class="btn btn-primary" href="#report">Report a sighting</a>
+          <a id="directionsBtn" class="btn btn-secondary" target="_blank" rel="noopener">Get directions</a>
+          <button id="shareBtn" class="btn btn-secondary" type="button">Share</button>
+        </div>
+        <p id="shareMessage" class="share-message" aria-live="polite"></p>
+
+        <h3>Activity over time</h3>
+        <div class="chart-box">
+          <canvas id="timelineChart" role="img" aria-label="Line chart of sightings per year in this location"></canvas>
+        </div>
+
+        <h3>By species</h3>
+        <ul id="speciesBreakdown" class="species-list"></ul>
+
+        <h3>Latest sightings</h3>
+        <ul id="recentList" class="recent-list"></ul>
+      </aside>
+    </div>
+
+    <!-- Legend explaining marker colours -->
+    <div class="legend" aria-label="Map legend">
+      <span><i class="dot dot-high"></i> Sighting in the last 30 days</span>
+      <span><i class="dot dot-medium"></i> Last 90 days</span>
+      <span><i class="dot dot-low"></i> Older</span>
+      <span class="legend-note">Bigger circle = more sightings</span>
+    </div>
+
+    <!-- ===== Education section ===== -->
+    <section id="learn" class="learn" aria-labelledby="learnTitle">
+      <h2 id="learnTitle" class="section-title">Learn about ticks</h2>
+
+      <!-- Seasonal activity chart -->
+      <div class="card">
+        <h3>When are ticks most active?</h3>
+        <p class="muted">Sightings per month. Pick a location and year to compare.</p>
+        <div class="chart-controls">
+          <div class="filter">
+            <label for="seasonCity">Location</label>
+            <select id="seasonCity"><option value="all">All of the UK</option></select>
+          </div>
+          <div class="filter">
+            <label for="seasonYear">Year</label>
+            <select id="seasonYear"><option value="all">All years</option></select>
+          </div>
+        </div>
+        <div class="season-chart-box">
+          <canvas id="seasonChart" role="img" aria-label="Bar chart of tick sightings per month"></canvas>
+        </div>
+        <p id="seasonSummary" class="muted" aria-live="polite"></p>
+      </div>
+
+      <!-- Species identification guide -->
+      <div class="card">
+        <h3>Species identification guide</h3>
+        <p class="muted">The species found in our data, and how much of a risk they are to people and pets.</p>
+        <div id="speciesGuide" class="species-grid"></div>
+      </div>
+
+      <!-- Prevention tips -->
+      <div class="card">
+        <h3>How to prevent tick bites</h3>
+        <div class="tips-grid">
+          <div>
+            <h4>When you're outdoors</h4>
+            <ul>
+              <li>Stick to paths and avoid long grass and dense undergrowth.</li>
+              <li>Wear long sleeves and tuck your trousers into your socks.</li>
+              <li>Wear light-coloured clothing so ticks are easier to spot.</li>
+              <li>Use an insect repellent that works against ticks (for example, one containing DEET).</li>
+            </ul>
+          </div>
+          <div>
+            <h4>After a walk</h4>
+            <ul>
+              <li>Check your skin, especially armpits, groin, waist and behind the knees.</li>
+              <li>Check children's heads and necks, including the hairline.</li>
+              <li>Brush off clothing before going indoors.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Protecting your pets</h4>
+            <ul>
+              <li>Check your dog or cat after every walk: around the ears, face, armpits and between the toes.</li>
+              <li>Ask your vet about a tick prevention treatment.</li>
+              <li>Keep long grass in your garden short.</li>
+            </ul>
+          </div>
+          <div>
+            <h4>If you find a tick</h4>
+            <ul>
+              <li>Remove it as soon as possible with fine-tipped tweezers or a tick removal tool.</li>
+              <li>Grip it as close to the skin as you can and pull upwards slowly and steadily.</li>
+              <li>Don't squeeze, burn or cover it in creams.</li>
+              <li>Clean the bite and watch it for a few weeks. See a GP if you get a spreading rash or flu-like symptoms.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted small">
+          General guidance only, based on NHS advice. For medical help see a GP; for pets, speak to your vet.
+          <a href="https://www.nhs.uk/conditions/lyme-disease/" target="_blank" rel="noopener">NHS: Lyme disease</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== Report a sighting ===== -->
+    <section id="report" class="report" aria-labelledby="reportTitle">
+      <h2 id="reportTitle" class="section-title" tabindex="-1">Report a sighting</h2>
+      <div class="card">
+        <p class="muted">Seen a tick? Tell us and it will appear on the map. Fields marked * are required.</p>
+
+        <!-- Success / error summary -->
+        <div id="formMessage" class="form-message" role="alert" hidden></div>
+
+        <form id="reportForm" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="reportDate">Date *</label>
+              <input type="date" id="reportDate" name="date" required aria-describedby="reportDateMsg">
+              <p id="reportDateMsg" class="field-msg"></p>
+            </div>
+
+            <div class="field">
+              <label for="reportTime">Time *</label>
+              <input type="time" id="reportTime" name="time" required aria-describedby="reportTimeMsg">
+              <p id="reportTimeMsg" class="field-msg"></p>
+            </div>
+
+            <div class="field">
+              <label for="reportCity">Location *</label>
+              <select id="reportCity" name="city" required aria-describedby="reportCityMsg">
+                <option value="">Choose a location</option>
+              </select>
+              <p id="reportCityMsg" class="field-msg"></p>
+            </div>
+
+            <div class="field">
+              <label for="reportSpecies">Species *</label>
+              <select id="reportSpecies" name="species" required aria-describedby="reportSpeciesMsg">
+                <option value="">Choose a species</option>
+                <option value="Unknown">Not sure</option>
+              </select>
+              <p id="reportSpeciesMsg" class="field-msg"></p>
+            </div>
+
+            <div class="field">
+              <label for="reportFoundOn">Where was the tick?</label>
+              <select id="reportFoundOn" name="foundOn">
+                <option value="">Prefer not to say</option>
+                <option>On a person</option>
+                <option>On a dog</option>
+                <option>On a cat</option>
+                <option>On another animal</option>
+                <option>In the environment (grass, plants)</option>
+              </select>
+            </div>
+
+            <div class="field field-wide">
+              <label for="reportNotes">Notes</label>
+              <textarea id="reportNotes" name="notes" rows="3" maxlength="500"
+                aria-describedby="reportNotesMsg" placeholder="e.g. found on my dog after a walk in the woods"></textarea>
+              <p id="reportNotesMsg" class="field-msg muted">0 / 500 characters</p>
+            </div>
+
+            <div class="field field-wide">
+              <label for="reportImage">Photo (optional)</label>
+              <input type="file" id="reportImage" name="image" accept="image/jpeg,image/png,image/webp"
+                aria-describedby="reportImageMsg">
+              <p id="reportImageMsg" class="field-msg muted">JPG, PNG or WebP, up to 5 MB.</p>
+              <img id="imagePreview" class="image-preview" alt="Preview of the photo you chose" hidden>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Submit sighting</button>
+            <button type="reset" class="btn btn-secondary">Clear form</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Reports this user has made -->
+      <div class="card">
+        <h3>Your reports</h3>
+        <p class="muted small">Saved in this browser.</p>
+        <ul id="myReports" class="my-reports"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Chart.js: free library for drawing charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script src="education.js"></script>
+  <script src="report.js"></script>
+</body>
+</html>
