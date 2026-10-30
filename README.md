@@ -6,6 +6,8 @@ A web app that maps tick sightings across the UK, helps people understand tick r
 
 🎥 **Video walkthrough:** _[add your unlisted YouTube link here]_
 
+🌐 **Live demo:** https://mr4maan.github.io/uk-tick-tracker/
+
 ---
 
 ## How to run it
@@ -107,7 +109,7 @@ The app shows how many records were skipped and why.
 - A "Skip to main content" link for keyboard users.
 - All form fields have labels. Errors are linked to their fields (`aria-describedby`, `aria-invalid`), and focus moves to the first error.
 - A **Location dropdown** opens the same details as clicking a map marker, so the map can be used without a mouse.
-- Status and form messages are announced to screen readers (`aria-live`, `role="alert"`).
+- Status and form messages are announced to screen readers (`aria-`, `role="alert"`).
 - Charts have text descriptions, and the seasonal chart has a written summary underneath.
 - The Escape key closes the details panel.
 - Visible focus outlines and a responsive layout for small screens.
