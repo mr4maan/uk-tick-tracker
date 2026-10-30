@@ -116,12 +116,12 @@ The app shows how many records were skipped and why.
 
 ---
 
-## What I'd improve with more time
+## What I’d Do If I Had More Time
 
-- **A real backend and database** (for example Node.js + PostgreSQL) so reports are shared between all users, not just saved in one browser. Uploaded photos would go to cloud storage.
-- **Exact locations for reports** using the browser's location or a postcode search, instead of choosing the nearest city.
-- **Moderation** of user reports and photos before they appear publicly.
-- **Automated tests** for the data cleaning and form validation.
-- **A heatmap layer** and clustering, for when there are many more locations.
-- **Server-side filtering and pagination**, if the dataset grew much larger.
-- **Dark mode** and a full accessibility audit with a screen reader.
+- **A real backend and database** (e.g. Node.js + PostgreSQL) so reports are shared with all users and not just saved in one browser. Photos uploaded would be stored in cloud storage.
+- **Pinpoint locations for reports** from the browser’s location or a postcode search, instead of selecting the closest city.
+- **moderation** of user reports and photos before they go public
+- **Automated tests** on the cleaning of the data and validation of the forms.
+- Heatmap layer and clustering, for when there are many more locations.
+- Server-side filtering and pagination if dataset got way larger.
+- **Dark mode** and full accessibility
