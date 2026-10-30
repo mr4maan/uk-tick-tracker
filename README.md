@@ -82,15 +82,14 @@ The API returns sightings like this:
 
 **1. Fetching.** All sightings are fetched in one request (around 1,000 records) and then filtered in the browser. This is quicker for the size of dataset than calling the API each time a filter changes.
 
-**2. Rate limits and failures.**
-- The data is **cached in the browser for 1 hour** to reduce API calls and avoid the rate limit.
-- Failed requests are **retried up to 3 times**, waiting a little longer each time.
-- If the API is down, the app **falls back to the last saved copy** and tells the user.
-- If there is no saved copy either, a clear error message is shown. The user's own reports still appear.
+2. Rate limits and failures- The data is **cached in the browser for 1 hour** so it doesn’t hit the rate limit and reduces API calls.
+- failed requests **retried up to 3 times**, with increasing wait times.
+- If the API is down, the app **falls back to the last saved copy** and notifies the user.
+-If there is no saved copy either, a clear error message is shown. The user can still see his own reports.
 
-**3. Cleaning.** Each record is checked before use:
-- **Missing fields or invalid dates** are skipped.
-- **Duplicates** are skipped: the same `id`, or the same date + location + species.
+**3. Cleaning.** Each record is inspected before use:
+- **Missing fields** or invalid dates are ignored.
+- **Duplicates are ignored**: same `id`, or same date + location + species.
 - **Location names** are matched regardless of capital letters or extra spaces.
 - **Unknown locations** are skipped and logged.
 
@@ -100,19 +99,17 @@ The app shows how many records were skipped and why.
 
 **5. Grouping.** Sightings are grouped into one marker per city, because every sighting in a city shares the same coordinates.
 
-**What I noticed in the data:** The sightings range from 2012 through 2024 and are fairly evenly distributed across months. Real tick activity usually peaks in spring and summer, which means this is synthetic test data. “Recent activity” is measured against the most recent sighting in the data, not the current date, as the data only goes up to 2024.
-
+**What I saw in the data:** The sightings range from 2012 to 2024 and are fairly evenly distributed over months. Real tick activity usually peaks in spring and summer. This is synthetic test data. The data only goes to 2024 so “recent activity” is based on the most recent sighting in the data, not the current date.
 ---
 
 ## Accessibility
 
-- A "Skip to main content" link for keyboard users.
-- All form fields have labels. Errors are linked to their fields (`aria-describedby`, `aria-invalid`), and focus moves to the first error.
+- A “Skip to main content” link for keyboard users.
+- All form fields are labelled. Errors are associated with their fields (aria-describedby, aria-invalid), and focus is sent to the first error.
 - A **Location dropdown** opens the same details as clicking a map marker, so the map can be used without a mouse.
-- Status and form messages are announced to screen readers (`aria-`, `role="alert"`).
-- Charts have text descriptions, and the seasonal chart has a written summary underneath.
-- The Escape key closes the details panel.
-- Visible focus outlines and a responsive layout for small screens.
+- Status and form messages are announced to screen readers ( `aria-` , `role="alert"` ).- Text descriptions of charts, and written summary below the seasonal chart.
+Escape key closes the details panel.
+- Visible focus outlines and a responsive layout for small displays.
 
 ---
 
